@@ -2,18 +2,30 @@ import express from "express";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
-import videoRoutes from "./routes/video.routes.js";
-import commentRoutes from "./routes/comment.routes.js";
 import channelRoutes from "./routes/channel.routes.js";
+import videoRoutes from "./routes/video.routes.js";
 
 const app = express();
 
-app.use(cors());
+// ✅ ONLY ONE CORS CONFIG — NO *
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+// ✅ Handle preflight requests
+app.options("*", cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 app.use(express.json());
 
+// Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/videos", videoRoutes);
-app.use("/api/comments", commentRoutes);
 app.use("/api/channels", channelRoutes);
+app.use("/api/videos", videoRoutes);
 
 export default app;

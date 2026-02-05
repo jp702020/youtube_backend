@@ -9,8 +9,7 @@ const channelSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
-    },
-    subscribers: { type: Number, default: 0 }
+    }
   },
   { timestamps: true }
 );

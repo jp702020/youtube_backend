@@ -1,58 +1,22 @@
 import Video from "../models/Video.js";
 
-/* GET all videos (search + filter) */
-export const getVideos = async (req, res) => {
-  const { search, category } = req.query;
-  let query = {};
+export const uploadVideo = async (req, res) => {
+  try {
+    const { title, description, channelId } = req.body;
 
-  if (search) {
-    query.title = { $regex: search, $options: "i" };
+    const videoUrl = req.files.video[0].path;
+    const thumbnailUrl = req.files.thumbnail[0].path;
+
+    const video = await Video.create({
+      title,
+      description,
+      channel: channelId,
+      videoUrl,
+      thumbnailUrl,
+    });
+
+    res.status(201).json(video);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  if (category && category !== "All") {
-    query.category = category;
-  }
-
-  const videos = await Video.find(query)
-    .populate("channelId", "channelName");
-
-  res.json(videos);
-};
-
-/* GET single video */
-export const getVideo = async (req, res) => {
-  const video = await Video.findById(req.params.id)
-    .populate("channelId", "channelName");
-
-  if (!video) {
-    return res.status(404).json({ message: "Video not found" });
-  }
-
-  res.json(video);
-};
-
-/* CREATE video (URL only) */
-export const createVideo = async (req, res) => {
-  const video = await Video.create({
-    ...req.body,
-    uploader: req.user.id
-  });
-
-  res.status(201).json(video);
-};
-
-/* LIKE video */
-export const likeVideo = async (req, res) => {
-  const video = await Video.findById(req.params.id);
-  video.likes += 1;
-  await video.save();
-  res.json(video);
-};
-
-/* DISLIKE video */
-export const dislikeVideo = async (req, res) => {
-  const video = await Video.findById(req.params.id);
-  video.dislikes += 1;
-  await video.save();
-  res.json(video);
 };
