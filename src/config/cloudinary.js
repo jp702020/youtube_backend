@@ -1,4 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config(); 
+
 import { v2 as cloudinary } from "cloudinary";
+
+if (!process.env.CLOUDINARY_API_KEY) {
+  throw new Error("Cloudinary env variables not loaded");
+}
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
